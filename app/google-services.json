@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "519286378268",
+    "firebase_url": "https://pylearn-py-default-rtdb.firebaseio.com",
+    "project_id": "pylearn-py",
+    "storage_bucket": "pylearn-py.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:519286378268:android:7f98b12aeaffffe591f4d9",
+        "android_client_info": {
+          "package_name": "com.example.pylearn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDu2-vPE2_gCJ7uy9qieJCKCiIStM-NvbM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
