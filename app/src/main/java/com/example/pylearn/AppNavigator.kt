@@ -1,5 +1,5 @@
 package com.example.pylearn
-import ProfileScreen
+
 import androidx.compose.runtime.Composable
 import androidx.navigation.*
 import androidx.navigation.compose.*
@@ -26,5 +26,3 @@ fun AppNavGraph(navController: NavHostController) {
         }
     }
 }
-
-
