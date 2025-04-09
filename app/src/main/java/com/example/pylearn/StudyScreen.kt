@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+
 @Composable
 fun StudyScreen(navController: NavController, userId: String) {
     var statistics by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
@@ -85,7 +86,7 @@ fun StudyScreen(navController: NavController, userId: String) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Button(
-                        onClick = { navController.navigate("theory_screen/$userId") },
+                        onClick = { navController.navigate("TheoryScreen/$userId") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
@@ -96,7 +97,7 @@ fun StudyScreen(navController: NavController, userId: String) {
                         Text("Теория", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                     Button(
-                        onClick = { navController.navigate("interactive_tasks_screen/$userId") },
+                        onClick = { navController.navigate("TaskScreen/$userId") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
@@ -107,7 +108,7 @@ fun StudyScreen(navController: NavController, userId: String) {
                         Text("Интерактивные задания", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                     Button(
-                        onClick = { navController.navigate("testing_screen/$userId") },
+                        onClick = { navController.navigate("TestScreen/$userId") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)

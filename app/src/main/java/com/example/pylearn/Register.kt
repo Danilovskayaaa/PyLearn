@@ -23,13 +23,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.DatabaseReference
+import java.text.SimpleDateFormat
+
+import java.util.Date
+import java.util.Locale
+
 val DarkGreenn = Color(0xFF1A3E1D)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navController: NavController) {
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
-    var patronymic by remember { mutableStateOf("") }
+    var patronomyc by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -96,8 +101,8 @@ fun RegisterScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
-                value = patronymic,
-                onValueChange = { patronymic = it },
+                value =patronomyc,
+                onValueChange = { patronomyc = it },
                 placeholder = { Text("Отчество", color = Color.White) },
                 singleLine = true,
                 colors = TextFieldDefaults.textFieldColors(
@@ -153,7 +158,7 @@ fun RegisterScreen(navController: NavController) {
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
-                    registerUser(firstName, lastName, patronymic, email, login, password, database, onRegistrationSuccess, ::setError)
+                    registerUser(firstName, lastName, patronomyc, email, login, password, database, onRegistrationSuccess, ::setError)
                 }),
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = Color.White.copy(alpha = 0.2f),
@@ -168,7 +173,7 @@ fun RegisterScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    registerUser(firstName, lastName, patronymic, email, login, password, database, onRegistrationSuccess, ::setAuthError)
+                    registerUser(firstName, lastName, patronomyc, email, login, password, database, onRegistrationSuccess, ::setAuthError)
                 },
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
@@ -178,6 +183,10 @@ fun RegisterScreen(navController: NavController) {
                 Text("Зарегистрироваться", color = Color.White)
             }
             Spacer(modifier = Modifier.height(8.dp))
+
+            TextButton(onClick = { navController.navigate("AuthScreen") }) {
+                Text("Авторизироваться", color = Color.White)
+            }
             if (errorMessage.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(errorMessage, color = MaterialTheme.colorScheme.error)
@@ -188,14 +197,15 @@ fun RegisterScreen(navController: NavController) {
 fun registerUser(
     firstName: String,
     lastName: String,
-    patronymic: String,
+    patronomyc: String,
     email: String,
     login: String,
     password: String,
     database: DatabaseReference,
     onSuccess: (String) -> Unit,
     onError: (String) -> Unit
-) {
+)
+{
     val usersRef = database
     usersRef.get().addOnSuccessListener { snapshot ->
         val idsInDatabase = if (snapshot.exists()) {
@@ -205,7 +215,7 @@ fun registerUser(
             emptyList<Long>()
         }
         fun generateUniqueId(): String {
-            val newIdAuth = (1_000_000_000..9_999_999_999).random().toString()
+            val newIdAuth = (1_000_000_000..2_147_483_647).random().toString()
             return if (newIdAuth in idsInDatabase.map { it.toString() }) {
                 generateUniqueId()
             } else {
@@ -216,17 +226,49 @@ fun registerUser(
         val newUser = mapOf(
             "Email" to email,
             "FirstName" to firstName,
-            "IDAuth" to newIdAuth,
+            "IDAuth" to newIdAuth.toIntOrNull() ,
             "LastName" to lastName,
             "Login" to login,
             "Password" to password,
-            "Patronymic" to patronymic
+            "Patronomyc" to patronomyc
         )
+        createStatisticsEntry(newIdAuth)
         usersRef.child(newIdAuth).setValue(newUser)
             .addOnSuccessListener { onSuccess(newIdAuth) }
             .addOnFailureListener { onError("Ошибка регистрации") }
     }.addOnFailureListener {
         onError("Ошибка при получении данных пользователей")
+    }
+}
+fun createStatisticsEntry(newIdAuth: String) {
+    val statisticsDatabase = FirebaseDatabase.getInstance().getReference("Statistics")
+
+
+    val statisticsId = newIdAuth.toIntOrNull()
+
+    if (statisticsId != null) {
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()) // Получаем текущую дату в формате YYYY-MM-DD
+        val statisticsEntry = mapOf(
+            "CompletedTasks" to 0,
+            "CompletedTests" to 0,
+            "CompletedTheory" to 0,
+            "CorrectAnswers" to 0,
+            "IDAuth" to statisticsId,
+            "IDStat" to statisticsId,
+            "LastActivity" to currentDate,
+            "TotalAttempts" to 0,
+            "WrongAnswers" to 0
+        )
+
+        statisticsDatabase.child(statisticsId.toString()).setValue(statisticsEntry)
+            .addOnSuccessListener {
+                Log.d("StatisticsEntry", "Статистика для пользователя $newIdAuth успешно создана.")
+            }
+            .addOnFailureListener {
+                Log.e("StatisticsError", "Ошибка создания записи статистики: ${it.message}")
+            }
+    } else {
+        Log.e("StatisticsError", "Ошибка: IDAuth не может быть преобразован в число.")
     }
 }
 fun setAuthError(message: String) {
