@@ -36,7 +36,7 @@ fun AppNavGraph(navController: NavHostController, sharedPreferences: SharedPrefe
         composable("TaskScreen/{userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
-                TaskScreen(navController, userId, sharedPreferences) // Передаём sharedPreferences только здесь
+                TaskScreen(navController, userId, sharedPreferences)
             }
         }
         composable("StudyScreen/{userId}") { backStackEntry ->

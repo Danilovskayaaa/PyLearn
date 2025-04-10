@@ -1,13 +1,6 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.example.pylearn
-
 import android.content.SharedPreferences
-import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -23,7 +17,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -45,8 +41,6 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-
 data class Task(
     val IDTest: Int = 0,
     val category: String = "",
@@ -56,7 +50,6 @@ data class Task(
     val title: String = "",
     var isCorrect: Boolean = false
 )
-
 fun updateStatisticsCode(userId: Int, isCorrect: Boolean) {
     val database = FirebaseDatabase.getInstance().reference
     val statsRef = database.child("Statistics")
@@ -78,7 +71,6 @@ fun updateStatisticsCode(userId: Int, isCorrect: Boolean) {
                         "WrongAnswers" to updatedWrongAnswers,
                         "LastActivity" to currentDate
                     )
-
                     statsRef.child(record.key!!).updateChildren(updates)
                 }
             }
@@ -91,39 +83,28 @@ fun updateStatisticsCode(userId: Int, isCorrect: Boolean) {
             Log.e("Firebase", "Ошибка при получении статистики", exception)
         }
 }
-
-
-
 data class CodeExecutionResult(
     val output: String = "",
     var error: String = ""
 )
-
-class TaskViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
+class TaskViewModel(private val sharedPreferences: SharedPreferences,userId: Int) : ViewModel() {
     private val database = FirebaseDatabase.getInstance().getReference("Tasks")
-
     private val _categoryCompletion = MutableStateFlow<Map<String, Boolean>>(emptyMap())
     val categoryCompletion: StateFlow<Map<String, Boolean>> = _categoryCompletion
-
     private val _selectedTask = MutableStateFlow(Task())
     val selectedTask = _selectedTask.asStateFlow()
-
     private val _executionResult = MutableStateFlow(CodeExecutionResult())
     val executionResult = _executionResult.asStateFlow()
-
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
     val tasks = _tasks.asStateFlow()
-
     private val _selectedCategory = MutableStateFlow<String?>(null)
     val selectedCategory = _selectedCategory.asStateFlow()
-
     init {
-        loadTasks()
+        loadTasks(userId)
     }
-
-    private fun saveTaskStatus(taskId: Int, isCorrect: Boolean) {
+    private fun saveTaskStatus(userId: Int, taskId: Int, isCorrect: Boolean) {
         val editor = sharedPreferences.edit()
-        editor.putBoolean("task_${taskId}_isCorrect", isCorrect)
+        editor.putBoolean("user_${userId}_task_${taskId}_isCorrect", isCorrect)
         editor.apply()
     }
     private val _codeMap = mutableStateMapOf<Int, String>()
@@ -132,22 +113,21 @@ class TaskViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
     fun updateCode(idTest: Int, newCode: String) {
         _codeMap[idTest] = newCode
     }
-
-    fun loadTaskStatus(taskId: Int): Boolean? {
-        return if (sharedPreferences.contains("task_${taskId}_isCorrect")) {
-            sharedPreferences.getBoolean("task_${taskId}_isCorrect", false)
+    fun loadTaskStatus(userId: Int, taskId: Int): Boolean? {
+        return if (sharedPreferences.contains("user_${userId}_task_${taskId}_isCorrect")) {
+            sharedPreferences.getBoolean("user_${userId}_task_${taskId}_isCorrect", false)
         } else {
             null
         }
     }
-
-
-
-    fun loadTasks() {
+    fun isTaskCompleted(userId: Int, taskId: Int): Boolean {
+        return loadTaskStatus(userId, taskId) == true
+    }
+    fun loadTasks(userId: Int) {
         database.get().addOnSuccessListener { snapshot ->
             val list = snapshot.children.mapNotNull { it.getValue(Task::class.java) }
             list.forEach { task ->
-                val taskStatus = loadTaskStatus(task.IDTest)
+                val taskStatus = loadTaskStatus(userId, task.IDTest)
             }
             _tasks.value = list
             _tasks.value.groupBy { it.category }.keys.forEach { category ->
@@ -155,7 +135,6 @@ class TaskViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             }
         }
     }
-
     fun selectTask(task: Task) {
         _selectedTask.value = task
         _executionResult.value = CodeExecutionResult()
@@ -163,7 +142,6 @@ class TaskViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             checkCategoryCompletion(it)
         }
     }
-
     fun selectCategory(category: String?) {
         _selectedCategory.value = category
         _selectedTask.value = Task()
@@ -171,7 +149,6 @@ class TaskViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             checkCategoryCompletion(it)
         }
     }
-
     private fun checkCategoryCompletion(category: String) {
         val allTasksInCategory = _tasks.value.filter { it.category == category }
         val allCorrect = allTasksInCategory.all { it.isCorrect }
@@ -182,12 +159,10 @@ class TaskViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
 
     fun checkPythonCode(code: String, input: String, userId: Int) {
         val client = OkHttpClient()
-
         if (!isValidPythonCode(code)) {
             _executionResult.value = CodeExecutionResult(error = "Неверная структура кода. Пожалуйста, напишите код для выполнения задачи.")
             return
         }
-
         val json = """
         {
             "clientId": "17c390a305bafda1bcfc5fa7b14d0876",
@@ -198,31 +173,25 @@ class TaskViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             "stdin": "${input.replace("\"", "\\\"").replace("\n", "\\n")}"
         }
     """.trimIndent()
-
         val requestBody = json.toRequestBody("application/json".toMediaType())
-
         val request = Request.Builder()
             .url("https://api.jdoodle.com/v1/execute")
             .post(requestBody)
             .build()
-
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 _executionResult.value = CodeExecutionResult(error = e.localizedMessage ?: "Неизвестная ошибка")
             }
-
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
                     response.body?.string()?.let { body ->
                         val output = Regex("\"output\":\"(.*?)\"").find(body)?.groupValues?.get(1)?.replace("\\n", "\n") ?: ""
                         val error = Regex("\"error\":\"(.*?)\"").find(body)?.groupValues?.getOrNull(1)?.replace("\\n", "\n") ?: ""
-
                         if (output.isNotEmpty()) {
                             val isCorrect = output.trim() == selectedTask.value.expectedOutput.trim()
                             _executionResult.value = CodeExecutionResult(output = output + if (isCorrect) "\n\nРезультат верный!" else "\n\nРезультат неверный!")
-
                             selectedTask.value.isCorrect = isCorrect
-                            saveTaskStatus(selectedTask.value.IDTest, isCorrect)
+                            saveTaskStatus(userId, selectedTask.value.IDTest, isCorrect)
                             updateStatisticsCode(userId, isCorrect)
                             checkCategoryCompletion(selectedTask.value.category)
                         } else if (error.isNotEmpty()) {
@@ -237,8 +206,6 @@ class TaskViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
             }
         })
     }
-
-
     fun isValidPythonCode(code: String): Boolean {
         val functionRegex = Regex("def\\s+\\w+\\s*\$")
         val loopRegex = Regex("for\\s+\\w+\\s+in\\s+\\w+")
@@ -252,30 +219,28 @@ class TaskViewModel(private val sharedPreferences: SharedPreferences) : ViewMode
                 variableRegex.containsMatchIn(code)
     }
 }
-
-class TaskViewModelFactory(private val sharedPreferences: SharedPreferences) : ViewModelProvider.Factory {
+class TaskViewModelFactory(
+    private val sharedPreferences: SharedPreferences,
+    private val userId: Int
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return TaskViewModel(sharedPreferences) as T
+            return TaskViewModel(sharedPreferences, userId) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
-
-
 @Composable
 fun TaskScreen(navController: NavController, userId: String, sharedPreferences: SharedPreferences) {
-    val viewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(sharedPreferences))
+    val viewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(sharedPreferences,userId.toInt()))
     val tasks by viewModel.tasks.collectAsState()
     val selectedTask by viewModel.selectedTask.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
     val executionResult by viewModel.executionResult.collectAsState()
     val categoryCompletion by viewModel.categoryCompletion.collectAsState()
-
     var code by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.interscren),
@@ -283,7 +248,6 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -340,9 +304,6 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                         }
                     }
                 }
-
-                // Отображаем задачи по выбранной категории
-                // Отображаем задачи по выбранной категории
                 selectedCategory != null && selectedTask.title.isEmpty() -> {
                     Text(
                         text = "Задачи по категории: $selectedCategory",
@@ -358,7 +319,7 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                             .padding(bottom = 100.dp)
                     ) {
                         items(tasks.filter { it.category == selectedCategory }) { task ->
-                            val taskStatus = viewModel.loadTaskStatus(task.IDTest)
+                            val taskStatus = viewModel.loadTaskStatus(userId.toInt(), task.IDTest)
 
                             val isTaskCompleted = taskStatus == true
                             val isTaskIncorrect = taskStatus == false
@@ -401,11 +362,7 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                             }
                         }
                     }
-
-
-
-
-            }
+                }
                 selectedCategory != null && selectedTask.title.isNotEmpty() -> {
                     Text(
                         text = selectedTask.title,
@@ -417,7 +374,6 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                         text = selectedTask.description,
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
-
                     val code = viewModel.codeMap[selectedTask.IDTest] ?: ""
 
                     BasicTextField(
@@ -428,18 +384,36 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp)
-                            .background(Color.LightGray)
-                            .padding(8.dp),
-                        textStyle = TextStyle.Default.copy(color = Color.Black)
+                            .background(Color.White, shape = RoundedCornerShape(12.dp))
+                            .shadow(4.dp, shape = RoundedCornerShape(12.dp))
+                            .padding(16.dp),
+                        textStyle = TextStyle.Default.copy(
+                            color = Color.Black,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        cursorBrush = SolidColor(Color.Blue),
+                        decorationBox = { innerTextField ->
+                            if (code.isEmpty()) {
+                                Text("Введите код...", color = Color.Gray)
+                            }
+                            innerTextField()
+                        }
                     )
-
                     Button(
                         onClick = {
+                            if (viewModel.isTaskCompleted(userId.toInt(), selectedTask.IDTest)) {
+                                Log.d("TaskCheck", "Task already completed: ${selectedTask.IDTest}")
+                                executionResult.error = "Задание уже выполнено."
+                                return@Button
+                            }
                             if (code.isNotBlank()) {
                                 isLoading = true
+                                Log.d("TaskCheck", "Checking code for task: ${selectedTask.IDTest}")
                                 viewModel.checkPythonCode(code, selectedTask.testInput, userId.toInt())
                             } else {
                                 executionResult.error = "Код не может быть пустым."
+                                Log.d("TaskCheck", "Error: Code is blank")
                             }
                         },
                         modifier = Modifier.padding(top = 8.dp),
@@ -453,21 +427,18 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                     if (isLoading) {
                         CircularProgressIndicator(modifier = Modifier.padding(top = 8.dp))
                     }
-
                     Text("Результат:", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
                     if (executionResult.output.isNotEmpty()) {
                         Text(text = executionResult.output)
                     } else if (executionResult.error.isNotEmpty()) {
                         Text(text = executionResult.error, color = Color.Red)
                     }
-
                     LaunchedEffect(executionResult) {
                         isLoading = false
                     }
                 }
             }
         }
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
