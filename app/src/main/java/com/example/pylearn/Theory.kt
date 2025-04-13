@@ -31,26 +31,20 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
-
-
 fun getUserSharedPreferences(context: Context, userId: String): SharedPreferences {
     return context.getSharedPreferences("TheoryPrefs_$userId", Context.MODE_PRIVATE)
 }
-
 fun isTheoryCompleted(context: Context, userId: String, theoryId: String): Boolean {
     val preferences = context.getSharedPreferences("TheoryPrefs_$userId", Context.MODE_PRIVATE)
     return preferences.getBoolean("completed_theory_$theoryId", false)
 }
-
 fun saveTheoryCompletion(context: Context, userId: String, theoryId: String, isCompleted: Boolean) {
     val preferences = context.getSharedPreferences("TheoryPrefs_$userId", Context.MODE_PRIVATE)
-    if (isTheoryCompleted(context, userId, theoryId)) return 
-
+    if (isTheoryCompleted(context, userId, theoryId)) return // Не обновляем, если уже завершено
     val editor = preferences.edit()
     editor.putBoolean("completed_theory_$theoryId", isCompleted)
     editor.apply()
 }
-
 data class Theory(
     val Category: String = "",
     val IDTheory: Int = 0,
@@ -58,26 +52,18 @@ data class Theory(
     val Title: String = "",
     var isCompleted: Boolean = false
 )
-
 class TheoryViewModel : androidx.lifecycle.ViewModel() {
-
     private val database = FirebaseDatabase.getInstance().getReference("Theory")
-
     var theoryList by mutableStateOf<List<Theory>>(emptyList())
         private set
-
     var categories by mutableStateOf<List<String>>(emptyList())
         private set
-
     var titles by mutableStateOf<List<String>>(emptyList())
         private set
-
     var selectedCategory by mutableStateOf<String?>(null)
         private set
-
     var selectedTheory by mutableStateOf<Theory?>(null)
         private set
-
     init {
         loadTheory()
     }
@@ -92,35 +78,33 @@ class TheoryViewModel : androidx.lifecycle.ViewModel() {
                 theoryList = tempList
                 categories = tempList.map { it.Category }.distinct()
             }
-
             override fun onCancelled(error: DatabaseError) {}
         })
     }
-
     fun selectCategory(category: String) {
         selectedCategory = category
         titles = theoryList.filter { it.Category == category }.map { it.Title }
         selectedTheory = null
     }
-
     fun selectTheory(title: String) {
         selectedTheory = theoryList.firstOrNull { it.Title == title }
         selectedTheory?.isCompleted = true
     }
-
     fun resetSelection() {
         selectedCategory = null
         titles = emptyList()
         selectedTheory = null
     }
 }
-
+fun getCompletionStatsForCategory(context: Context, userId: String, category: String, theoryList: List<Theory>): Pair<Int, Int> {
+    val totalLectures = theoryList.count { it.Category == category }
+    val completedLectures = theoryList.count { it.Category == category && isTheoryCompleted(context, userId, it.IDTheory.toString()) }
+    return Pair(completedLectures, totalLectures)
+}
 fun incrementCompletedTheory(userId: Int) {
     val database = FirebaseDatabase.getInstance().reference
     val statsRef = database.child("Statistics")
-
     val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-
     statsRef.get()
         .addOnSuccessListener { snapshot ->
             var found = false
@@ -129,16 +113,13 @@ fun incrementCompletedTheory(userId: Int) {
                 if (idAuth != null && idAuth == userId) {
                     found = true
                     Log.d("Firebase", "Данные найдены для пользователя с IDAuth = $userId")
-
                     val idStat = record.child("IDStat").getValue(Int::class.java) ?: return@forEach
                     val completedTheory = record.child("CompletedTheory").getValue(Int::class.java) ?: 0
                     val updatedTheory = completedTheory + 1
-
                     val updates = mapOf(
                         "CompletedTheory" to updatedTheory,
                         "LastActivity" to currentDate
                     )
-
                     statsRef.child(record.key!!).updateChildren(updates)
                         .addOnSuccessListener {
                             Log.d("Firebase", "Успешно обновлены данные для IDStat: $idStat")
@@ -148,7 +129,6 @@ fun incrementCompletedTheory(userId: Int) {
                         }
                 }
             }
-
             if (!found) {
                 Log.e("Firebase", "Статистика для пользователя с IDAuth $userId не найдена")
             }
@@ -157,8 +137,6 @@ fun incrementCompletedTheory(userId: Int) {
             Log.e("Firebase", "Ошибка при получении статистики", exception)
         }
 }
-
-
 @Composable
 fun TheoryScreen(
     navController: NavController,
@@ -177,7 +155,6 @@ fun TheoryScreen(
             isTheoryRead = false
         }
     }
-
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.backtheory),
@@ -185,7 +162,6 @@ fun TheoryScreen(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -211,7 +187,6 @@ fun TheoryScreen(
                             color = Color.White
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-
                         Button(
                             onClick = {
                                 if (!isTheoryCompleted(context, userId, selectedTheory!!.IDTheory.toString())) {
@@ -241,7 +216,6 @@ fun TheoryScreen(
                     val allLecturesCompleted = viewModel.theoryList
                         .filter { it.Category == selectedCategory }
                         .all { isTheoryCompleted(context, userId, it.IDTheory.toString()) }
-
                     LazyColumn {
                         items(titles) { title ->
                             val theory = viewModel.theoryList.firstOrNull { it.Title == title }
@@ -299,12 +273,10 @@ fun TheoryScreen(
                         color = Color(0xFF346837),
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-
                     LazyColumn {
                         items(categories) { category ->
-                            val allLecturesCompleted = viewModel.theoryList
-                                .filter { it.Category == category }
-                                .all { isTheoryCompleted(context, userId, it.IDTheory.toString()) }
+                            val (completedLectures, totalLectures) = getCompletionStatsForCategory(context, userId, category, viewModel.theoryList)
+                            val completionPercentage = if (totalLectures > 0) (completedLectures * 100) / totalLectures else 0
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -324,7 +296,14 @@ fun TheoryScreen(
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.weight(1f)
                                     )
-                                    if (allLecturesCompleted) {
+                                    if (totalLectures > 0) {
+                                        Text(
+                                            text = "${completedLectures}/${totalLectures} (${completionPercentage}%)",
+                                            color = Color.Gray,
+                                            fontSize = 14.sp
+                                        )
+                                    }
+                                    if (completedLectures == totalLectures && totalLectures > 0) {
                                         Icon(
                                             imageVector = Icons.Default.CheckCircle,
                                             contentDescription = "Completed Category",
@@ -341,6 +320,12 @@ fun TheoryScreen(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837))
                     ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.undopic),
+                            contentDescription = "Назад",
+                            modifier = Modifier.size(20.dp),
+                            tint = Color.White
+                        )
                         Text("Вернуться на экран обучения")
                     }
                 }

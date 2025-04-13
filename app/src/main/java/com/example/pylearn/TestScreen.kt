@@ -1,5 +1,4 @@
 package com.example.pylearn
-
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -34,13 +32,10 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-
 data class Answer(
     val Answer: String = "",
     val IsCorrect: Boolean = false
 )
-
 data class TestQuestion(
     val IDTest: Int = 0,
     val TestTask: String = "",
@@ -48,7 +43,6 @@ data class TestQuestion(
     val TestQuestion: String = "",
     val Answers: List<Answer> = listOf()
 )
-
 @Composable
 fun TestScreen(
     navController: NavController,
@@ -95,13 +89,10 @@ fun TestScreen(
                 answeredQuestions = tempAnsweredQuestions
                 correctAnswersPerCategory = tempCorrectAnswersPerCategory
             }
-
             override fun onCancelled(error: DatabaseError) {
-
             }
         })
     }
-
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.backtest),
@@ -130,7 +121,6 @@ fun TestScreen(
                             color = Color(0xFF346837),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
-
                         val shuffledAnswers = remember { selectedQuestion!!.Answers.shuffled() }
                         shuffledAnswers.forEach { answer ->
                             val isAnswered = answeredQuestions[selectedQuestion!!.IDTest] != null
@@ -138,10 +128,8 @@ fun TestScreen(
                                 "correct_answer_${userId}_${selectedQuestion!!.IDTest}",
                                 false
                             )
-
                             Button(
                                 onClick = {
-
                                     if (!isAnswered) {
                                         val answerIsCorrect = answer.IsCorrect
                                         if (answerIsCorrect) {
@@ -151,13 +139,10 @@ fun TestScreen(
                                         }
                                         answeredQuestions = answeredQuestions + (selectedQuestion!!.IDTest to true)
                                         completedQuestions = completedQuestions + (selectedQuestion!!.IDTest to true)
-
                                         correctAnswersPerCategory = correctAnswersPerCategory.toMutableMap().apply {
                                             val currentCorrect = getOrDefault(selectedCategory, 0)
                                             this[selectedCategory!!] = currentCorrect + (if (answerIsCorrect) 1 else 0)
                                         }
-
-
                                         saveAnswerState(sharedPref, userId, selectedQuestion!!.IDTest, answerIsCorrect)
                                         updateStatistics(userId.toInt(), answerIsCorrect)
                                         selectedQuestion = null
@@ -176,19 +161,15 @@ fun TestScreen(
                                         color = Color.White,
                                         modifier = Modifier.weight(1f)
                                     )
-
                                     if (isAnswered) {
-
                                         val icon = when {
                                             answer.IsCorrect -> Icons.Filled.CheckCircle
                                             else -> Icons.Filled.Close
                                         }
-
                                         val iconTint = when {
                                             answer.IsCorrect -> Color.Green
                                             else -> Color.Red
                                         }
-
                                         Icon(
                                             imageVector = icon,
                                             contentDescription = "Answer Status",
@@ -198,13 +179,6 @@ fun TestScreen(
                                 }
                             }
                         }
-
-
-
-
-
-
-
                     }
                 }
                 selectedCategory != null -> {
@@ -215,7 +189,6 @@ fun TestScreen(
                         color = Color(0xFF346837),
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -246,10 +219,8 @@ fun TestScreen(
                                     if (isAnswered) {
                                         val isCorrectAnswer = sharedPref.getBoolean("correct_answer_${userId}_${question.IDTest}", false)
                                         val isWrongAnswer = sharedPref.getBoolean("wrong_answer_${userId}_${question.IDTest}", false)
-
                                         Icon(
                                             imageVector = if (isCorrectAnswer) Icons.Filled.CheckCircle
-
                                             else Icons.Filled.Close,
                                             contentDescription = "Answered",
                                             tint = if (isCorrectAnswer) Color.Green else Color.Red
@@ -268,7 +239,6 @@ fun TestScreen(
                         color = Color(0xFF346837),
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -295,11 +265,9 @@ fun TestScreen(
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.weight(1f)
                                     )
-
                                     val correctAnswersInCategory = correctAnswersPerCategory[category] ?: 0
                                     val totalInCategory = totalQuestionsPerCategory[category] ?: 0
                                     val scorePercentage = if (totalInCategory > 0) (correctAnswersInCategory.toFloat() / totalInCategory * 100).toInt() else 0
-
                                     Text(
                                         text = "$correctAnswersInCategory / $totalInCategory ($scorePercentage%)",
                                         fontSize = 16.sp,
@@ -313,7 +281,6 @@ fun TestScreen(
                 }
             }
         }
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -332,6 +299,12 @@ fun TestScreen(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837))
             ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.undopic),
+                    contentDescription = "Назад",
+                    modifier = Modifier.size(20.dp),
+                    tint = Color.White
+                )
                 Text(
                     text = when {
                         selectedCategory != null -> "Назад"
@@ -341,17 +314,12 @@ fun TestScreen(
                     color = Color.White
                 )
             }
-
         }
     }
 }
-
-
-
 fun saveAnswerState(sharedPref: SharedPreferences, userId: String, testId: Int, isCorrect: Boolean) {
     val editor = sharedPref.edit()
     editor.putBoolean("answered_${userId}_$testId", true)
-
     if (isCorrect) {
         editor.putBoolean("correct_answer_${userId}_$testId", true)
         editor.putBoolean("wrong_answer_${userId}_$testId", false)
@@ -359,22 +327,17 @@ fun saveAnswerState(sharedPref: SharedPreferences, userId: String, testId: Int, 
         editor.putBoolean("correct_answer_${userId}_$testId", false)
         editor.putBoolean("wrong_answer_${userId}_$testId", true)
     }
-
     editor.apply()
 }
-
 fun isCorrectAnswer(sharedPref: SharedPreferences, userId: String, testId: Int): Boolean {
     return sharedPref.getBoolean("correct_answer_${userId}_$testId", false)
 }
-
 fun isAlreadyAnswered(sharedPref: SharedPreferences, userId: String, testId: Int): Boolean {
     return sharedPref.getBoolean("answered_${userId}_$testId", false)
 }
-
 fun isWrongAnswer(sharedPref: SharedPreferences, userId: String, testId: Int): Boolean {
     return sharedPref.getBoolean("wrong_answer_${userId}_$testId", false)
 }
-
 fun updateStatistics(userId: Int, isCorrect: Boolean) {
     val database = FirebaseDatabase.getInstance().reference
     val statsRef = database.child("Statistics")
@@ -390,17 +353,14 @@ fun updateStatistics(userId: Int, isCorrect: Boolean) {
                     val wrongAnswers = record.child("WrongAnswers").getValue(Int::class.java) ?: 0
                     val updatedCorrectAnswers = if (isCorrect) correctAnswers + 1 else correctAnswers
                     val updatedWrongAnswers = if (!isCorrect) wrongAnswers + 1 else wrongAnswers
-
                     val updates = mapOf(
                         "CompletedTests" to updatedCorrectAnswers,
                         "WrongAnswers" to updatedWrongAnswers,
                         "LastActivity" to currentDate
                     )
-
                     statsRef.child(record.key!!).updateChildren(updates)
                 }
             }
-
             if (!found) {
                 Log.e("Firebase", "Статистика для пользователя с IDAuth $userId не найдена")
             }

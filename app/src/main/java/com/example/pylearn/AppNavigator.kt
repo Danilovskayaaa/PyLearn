@@ -1,11 +1,9 @@
 package com.example.pylearn
-
 import android.content.SharedPreferences
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-
 @Composable
 fun AppNavGraph(navController: NavHostController, sharedPreferences: SharedPreferences) {
     NavHost(navController = navController, startDestination = "AuthScreen") {
@@ -19,6 +17,12 @@ fun AppNavGraph(navController: NavHostController, sharedPreferences: SharedPrefe
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
                 ProfileScreen(navController, userId)
+            }
+        }
+        composable("SettingsScreen/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+            if (userId != null) {
+                SettingsScreen(navController, userId)
             }
         }
         composable("TheoryScreen/{userId}") { backStackEntry ->
@@ -36,7 +40,7 @@ fun AppNavGraph(navController: NavHostController, sharedPreferences: SharedPrefe
         composable("TaskScreen/{userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")
             if (userId != null) {
-                TaskScreen(navController, userId, sharedPreferences)
+                TaskScreen(navController, userId, sharedPreferences) // Передаём sharedPreferences только здесь
             }
         }
         composable("StudyScreen/{userId}") { backStackEntry ->

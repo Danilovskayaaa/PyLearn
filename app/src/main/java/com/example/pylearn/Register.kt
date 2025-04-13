@@ -1,7 +1,6 @@
 package com.example.pylearn
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -28,7 +27,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-val DarkGreenn = Color(0xFF1A3E1D)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navController: NavController) {
@@ -242,12 +240,9 @@ fun registerUser(
 }
 fun createStatisticsEntry(newIdAuth: String) {
     val statisticsDatabase = FirebaseDatabase.getInstance().getReference("Statistics")
-
-
     val statisticsId = newIdAuth.toIntOrNull()
-
     if (statisticsId != null) {
-        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()) // Получаем текущую дату в формате YYYY-MM-DD
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val statisticsEntry = mapOf(
             "CompletedTasks" to 0,
             "CompletedTests" to 0,
@@ -259,7 +254,6 @@ fun createStatisticsEntry(newIdAuth: String) {
             "TotalAttempts" to 0,
             "WrongAnswers" to 0
         )
-
         statisticsDatabase.child(statisticsId.toString()).setValue(statisticsEntry)
             .addOnSuccessListener {
                 Log.d("StatisticsEntry", "Статистика для пользователя $newIdAuth успешно создана.")
@@ -274,5 +268,3 @@ fun createStatisticsEntry(newIdAuth: String) {
 fun setAuthError(message: String) {
     Log.e("AuthError", message)
 }
-
-

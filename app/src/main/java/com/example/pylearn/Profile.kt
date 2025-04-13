@@ -160,19 +160,19 @@ fun ProfileScreen(navController: NavController, userId: String) {
                     userInfo?.let { data ->
                         Text("Имя:", fontWeight = FontWeight.Bold)
                         Text(data["FirstName"] ?: "Неизвестно")
-                        Divider(modifier = Modifier.padding(vertical = 8.dp))
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         Text("Фамилия:", fontWeight = FontWeight.Bold)
                         Text(data["LastName"] ?: "Неизвестно")
-                        Divider(modifier = Modifier.padding(vertical = 8.dp))
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         Text("Отчество:", fontWeight = FontWeight.Bold)
                         Text(data["Patronomyc"] ?: "Неизвестно")
-                        Divider(modifier = Modifier.padding(vertical = 8.dp))
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         Text("Электронная почта:", fontWeight = FontWeight.Bold)
                         Text(data["Email"] ?: "Неизвестно")
-                        Divider(modifier = Modifier.padding(vertical = 8.dp))
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         Text("Логин:", fontWeight = FontWeight.Bold)
                         Text(data["Login"] ?: "Неизвестно")
-                        Divider(modifier = Modifier.padding(vertical = 8.dp))
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         Text("Пароль:", fontWeight = FontWeight.Bold)
                         Text("********")
                     } ?: run {
@@ -222,7 +222,7 @@ fun ProfileScreen(navController: NavController, userId: String) {
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(
-                onClick = {  },
+                onClick = {  navController.navigate("SettingsScreen/${userId}") },
                 modifier = Modifier.fillMaxWidth(0.8f),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837))
             ) {

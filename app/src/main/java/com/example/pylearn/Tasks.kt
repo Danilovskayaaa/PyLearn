@@ -65,7 +65,6 @@ fun updateStatisticsCode(userId: Int, isCorrect: Boolean) {
                     val wrongAnswers = record.child("WrongAnswers").getValue(Int::class.java) ?: 0
                     val updatedCorrectAnswers = if (isCorrect) correctAnswers + 1 else correctAnswers
                     val updatedWrongAnswers = if (!isCorrect) wrongAnswers + 1 else wrongAnswers
-
                     val updates = mapOf(
                         "CompletedTasks" to updatedCorrectAnswers,
                         "WrongAnswers" to updatedWrongAnswers,
@@ -74,7 +73,6 @@ fun updateStatisticsCode(userId: Int, isCorrect: Boolean) {
                     statsRef.child(record.key!!).updateChildren(updates)
                 }
             }
-
             if (!found) {
                 Log.e("Firebase", "Статистика для пользователя с IDAuth $userId не найдена")
             }
@@ -82,6 +80,12 @@ fun updateStatisticsCode(userId: Int, isCorrect: Boolean) {
         .addOnFailureListener { exception ->
             Log.e("Firebase", "Ошибка при получении статистики", exception)
         }
+}
+fun getCompletionStatsForCategory(sharedPreferences: SharedPreferences, userId: Int, category: String, tasks: List<Task>): Pair<Int, Int> {
+    val totalTasks = tasks.count { it.category == category }
+    val completedTasks = tasks.count { it.category == category && it.isCorrect }
+
+    return Pair(completedTasks, totalTasks)
 }
 data class CodeExecutionResult(
     val output: String = "",
@@ -109,7 +113,6 @@ class TaskViewModel(private val sharedPreferences: SharedPreferences,userId: Int
     }
     private val _codeMap = mutableStateMapOf<Int, String>()
     val codeMap: Map<Int, String> = _codeMap
-
     fun updateCode(idTest: Int, newCode: String) {
         _codeMap[idTest] = newCode
     }
@@ -156,9 +159,9 @@ class TaskViewModel(private val sharedPreferences: SharedPreferences,userId: Int
             put(category, allCorrect)
         }
     }
-
     fun checkPythonCode(code: String, input: String, userId: Int) {
         val client = OkHttpClient()
+
         if (!isValidPythonCode(code)) {
             _executionResult.value = CodeExecutionResult(error = "Неверная структура кода. Пожалуйста, напишите код для выполнения задачи.")
             return
@@ -270,7 +273,14 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                             .padding(bottom = 100.dp)
                     ) {
                         items(tasks.map { it.category }.distinct()) { category ->
-                            val isCategoryCompleted = categoryCompletion[category] ?: false
+                            val (completedTasks, totalTasks) = getCompletionStatsForCategory(
+                                sharedPreferences,
+                                userId.toInt(),
+                                category,
+                                tasks
+                            )
+                            val completionPercentage =
+                                if (totalTasks > 0) (completedTasks * 100) / totalTasks else 0
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -286,13 +296,13 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = category,
+                                        text = "$category ${completedTasks}/${totalTasks} (${completionPercentage}%)",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 20.sp,
                                         color = Color(0xFF346837),
                                         modifier = Modifier.weight(1f)
                                     )
-                                    if (isCategoryCompleted) {
+                                    if (completedTasks == totalTasks && totalTasks > 0) {
                                         Icon(
                                             imageVector = Icons.Default.CheckCircle,
                                             contentDescription = "Completed",
@@ -357,7 +367,6 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                                             tint = Color.Red
                                         )
                                     }
-
                                 }
                             }
                         }
@@ -375,7 +384,6 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                     val code = viewModel.codeMap[selectedTask.IDTest] ?: ""
-
                     BasicTextField(
                         value = code,
                         onValueChange = { newCode ->
@@ -423,7 +431,6 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                     ) {
                         Text("Проверить код")
                     }
-
                     if (isLoading) {
                         CircularProgressIndicator(modifier = Modifier.padding(top = 8.dp))
                     }
@@ -457,6 +464,13 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837))
             ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.undopic),
+                    contentDescription = "Назад",
+                    modifier = Modifier.size(20.dp),
+                    tint = Color.White
+                )
+
                 Text(
                     text = when {
                         selectedTask.title.isNotEmpty() -> "Назад"

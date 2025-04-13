@@ -1,6 +1,7 @@
 package com.example.pylearn
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +28,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 
 @Composable
 fun StudyScreen(navController: NavController, userId: String) {
@@ -65,7 +68,7 @@ fun StudyScreen(navController: NavController, userId: String) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
-                .padding(top = 100.dp)
+                .padding(top = 70.dp)
         ) {
             item {
                 Image(
@@ -93,7 +96,15 @@ fun StudyScreen(navController: NavController, userId: String) {
                             .padding(bottom = 8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837)),
                         shape = RoundedCornerShape(50)
-                    ) {
+                    )
+
+                    {
+                        Icon(
+                            painter = painterResource(id = R.drawable.theory),
+                            contentDescription = "Теория",
+                            modifier = Modifier.size(20.dp),
+                            tint = Color.White
+                        )
                         Text("Теория", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                     Button(
@@ -105,6 +116,13 @@ fun StudyScreen(navController: NavController, userId: String) {
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837)),
                         shape = RoundedCornerShape(50)
                     ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.takswor
+                            ),
+                            contentDescription = "Задания",
+                            modifier = Modifier.size(20.dp),
+                            tint = Color.White
+                        )
                         Text("Интерактивные задания", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                     Button(
@@ -116,6 +134,12 @@ fun StudyScreen(navController: NavController, userId: String) {
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837)),
                         shape = RoundedCornerShape(50)
                     ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.testpicte),
+                            contentDescription = "Тесты",
+                            modifier = Modifier.size(20.dp),
+                            tint = Color.White
+                        )
                         Text("Тестирование", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
@@ -139,139 +163,178 @@ fun StudyScreen(navController: NavController, userId: String) {
                                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
+
+                                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
                                         Text(
-                                            text = "Завершённые задания",
+                                            "Завершённые задания",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 14.sp
                                         )
                                         Text(
-                                            text = "${stat["CompletedTasks"]}",
+                                            "${stat["CompletedTasks"]}",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 12.sp
                                         )
                                     }
-                                    Divider(modifier = Modifier.padding(vertical = 8.dp))
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
+                                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
                                         Text(
-                                            text = "Завершённые тесты",
+                                            "Завершённые тесты",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 14.sp
                                         )
                                         Text(
-                                            text = "${stat["CompletedTests"]}",
+                                            "${stat["CompletedTests"]}",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 12.sp
                                         )
                                     }
-                                    Divider(modifier = Modifier.padding(vertical = 8.dp))
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
+                                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
                                         Text(
-                                            text = "Завершённая теория",
+                                            "Завершённая теория",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 14.sp
                                         )
                                         Text(
-                                            text = "${stat["CompletedTheory"]}",
+                                            "${stat["CompletedTheory"]}",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 12.sp
                                         )
                                     }
-                                    Divider(modifier = Modifier.padding(vertical = 8.dp))
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
+                                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
                                         Text(
-                                            text = "Правильные ответы",
+                                            "Правильные ответы",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 14.sp
                                         )
                                         Text(
-                                            text = "${stat["CorrectAnswers"]}",
+                                            "${stat["CorrectAnswers"]}",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 12.sp
                                         )
                                     }
-                                    Divider(modifier = Modifier.padding(vertical = 8.dp))
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
+                                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
                                         Text(
-                                            text = "Общее количество попыток",
+                                            "Общее количество попыток",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 14.sp
                                         )
                                         Text(
-                                            text = "${stat["TotalAttempts"]}",
+                                            "${stat["TotalAttempts"]}",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 12.sp
                                         )
                                     }
-                                    Divider(modifier = Modifier.padding(vertical = 8.dp))
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
+                                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
                                         Text(
-                                            text = "Неверные ответы",
+                                            "Неверные ответы",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 14.sp
                                         )
                                         Text(
-                                            text = "${stat["WrongAnswers"]}",
+                                            "${stat["WrongAnswers"]}",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 12.sp
                                         )
                                     }
-                                    Divider(modifier = Modifier.padding(vertical = 8.dp))
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
+                                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                                    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
                                         Text(
-                                            text = "Последняя активность",
+                                            "Последняя активность",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 14.sp
                                         )
                                         Text(
-                                            text = "${stat["LastActivity"]}",
+                                            "${stat["LastActivity"]}",
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black,
                                             fontSize = 12.sp
                                         )
                                     }
+                                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                                    Text(
+                                        text = "Гистограмма статистики",
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.Black,
+                                        modifier = Modifier
+
+                                            .fillMaxWidth(),
+                                        textAlign = TextAlign.Center
+                                    )
+                                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                                    val statsMap: Map<String, Float> = mapOf(
+                                        "📋" to (stat["CompletedTasks"]?.toString()?.toFloatOrNull() ?: 0f),
+                                        "📝" to (stat["CompletedTests"]?.toString()?.toFloatOrNull() ?: 0f),
+                                        "📚" to (stat["CompletedTheory"]?.toString()?.toFloatOrNull() ?: 0f),
+                                        "✅" to (stat["CorrectAnswers"]?.toString()?.toFloatOrNull() ?: 0f),
+                                        "❌" to (stat["WrongAnswers"]?.toString()?.toFloatOrNull() ?: 0f),
+                                        "🔄" to (stat["TotalAttempts"]?.toString()?.toFloatOrNull() ?: 0f)
+                                    )
+                                    val maxStat = statsMap.maxOfOrNull { it.value } ?: 1f
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(180.dp)
+                                    ) {
+                                        statsMap.toList().forEachIndexed { index, (label, value) ->
+                                            val barHeight = (150 * (value / maxStat)).dp.coerceAtLeast(8.dp)
+                                            Box(
+                                                modifier = Modifier
+                                                    .align(Alignment.BottomStart)
+                                                    .offset(x = (index * 60).dp)
+                                                    .height(barHeight)
+                                                    .width(40.dp)
+                                                    .background(Color(0xFF4CAF50), shape = RoundedCornerShape(8.dp))
+                                            )
+                                            Text(
+                                                text = label,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                textAlign = TextAlign.Center,
+                                                color = Color.Black,
+                                                modifier = Modifier
+                                                    .align(Alignment.BottomStart)
+                                                    .offset(x = (index * 60 + 10).dp)
+                                                    .padding(top = 8.dp)
+                                            )
+                                            Text(
+                                                text = value.toInt().toString(),
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.White,
+                                                modifier = Modifier
+                                                    .align(Alignment.BottomStart)
+                                                    .offset(x = (index * 60 + 10).dp)
+                                                    .padding(bottom = (barHeight.value + 4).dp)
+                                            )
+                                        }
+                                    }
+                                }
+                                }
                                 }
                             }
                         }
-                    }
-                }
             }
             item {
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Button(
                     onClick = { navController.navigate("ProfileScreen/$userId") },
                     modifier = Modifier
@@ -281,6 +344,12 @@ fun StudyScreen(navController: NavController, userId: String) {
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837)),
                     shape = RoundedCornerShape(50)
                 ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.undopic),
+                        contentDescription = "Назад",
+                        modifier = Modifier.size(20.dp),
+                        tint = Color.White
+                    )
                     Text("Вернуться в профиль", color = Color.White, fontWeight = FontWeight.Bold)
                 }
             }
