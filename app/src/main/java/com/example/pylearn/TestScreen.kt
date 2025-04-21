@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -201,10 +202,11 @@ fun TestScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
-                                    .clickable { selectedQuestion = question }
-                                    .border(1.dp, Color.Gray),
+                                    .clickable { selectedQuestion = question },
+
                                 colors = CardDefaults.cardColors(containerColor = Color.White),
-                                elevation = CardDefaults.cardElevation(4.dp)
+                                elevation = CardDefaults.cardElevation(4.dp),
+                                shape = RoundedCornerShape(12.dp)
                             ) {
                                 Row(
                                     modifier = Modifier.padding(16.dp),
@@ -250,10 +252,11 @@ fun TestScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
-                                    .clickable { selectedCategory = category }
-                                    .border(1.dp, Color.Gray),
+                                    .clickable { selectedCategory = category },
+
                                 colors = CardDefaults.cardColors(containerColor = Color.White),
-                                elevation = CardDefaults.cardElevation(4.dp)
+                                elevation = CardDefaults.cardElevation(4.dp),
+                                shape = RoundedCornerShape(12.dp)
                             ) {
                                 Row(
                                     modifier = Modifier.padding(16.dp),
@@ -299,12 +302,6 @@ fun TestScreen(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837))
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.undopic),
-                    contentDescription = "Назад",
-                    modifier = Modifier.size(20.dp),
-                    tint = Color.White
-                )
                 Text(
                     text = when {
                         selectedCategory != null -> "Назад"

@@ -10,7 +10,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -23,9 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationCompat
@@ -59,7 +56,7 @@ fun SettingsScreen(navController: NavController, userId: String) {
                 Text(
                     text = "Включить уведомления",
                     modifier = Modifier.padding(end = 8.dp),
-                    style = TextStyle(color = Color.White, fontSize = 18.sp)
+                    style = TextStyle(color = Color(0xFF346837), fontSize = 18.sp)
                 )
                 Switch(
                     checked = isNotificationEnabled,
@@ -81,22 +78,12 @@ fun SettingsScreen(navController: NavController, userId: String) {
                     modifier = Modifier.padding(8.dp)
                 )
             }
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = "Техническая поддержка",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                modifier = Modifier
-
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             TextField(
                 value = inputText,
                 onValueChange = { inputText = it },
-                label = { Text("Введите сообщение", color = Color.Black) },
+
+                label = { Text("Введите сообщение", color = Color(0xFF346837)) },
                 textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -121,12 +108,6 @@ fun SettingsScreen(navController: NavController, userId: String) {
                     .padding(vertical = 16.dp)
                     .height(56.dp)
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.helperpic),
-                    contentDescription = "Поддержка",
-                    modifier = Modifier.size(20.dp),
-                    tint = Color.White
-                )
                 Text(text = "Отправить сообщение", color = Color.White, fontSize = 18.sp)
             }
         }
@@ -144,12 +125,6 @@ fun SettingsScreen(navController: NavController, userId: String) {
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837))
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.undopic),
-                    contentDescription = "Назад",
-                    modifier = Modifier.size(20.dp),
-                    tint = Color.White
-                )
                 Text(
                     text = "Перейти в профиль",
                     color = Color.White

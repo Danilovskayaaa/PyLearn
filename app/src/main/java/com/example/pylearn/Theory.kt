@@ -184,7 +184,7 @@ fun TheoryScreen(
                         Text(
                             text = selectedTheory!!.Theory,
                             fontSize = 16.sp,
-                            color = Color.White
+                            color = Color(0xFF1A2D1B)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
@@ -320,12 +320,6 @@ fun TheoryScreen(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837))
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.undopic),
-                            contentDescription = "Назад",
-                            modifier = Modifier.size(20.dp),
-                            tint = Color.White
-                        )
                         Text("Вернуться на экран обучения")
                     }
                 }

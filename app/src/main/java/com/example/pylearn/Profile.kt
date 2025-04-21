@@ -149,7 +149,7 @@ fun ProfileScreen(navController: NavController, userId: String) {
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
-            Text("Данные пользователя",color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text("Данные пользователя",color = Color.Black, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
             Card(
                 modifier = Modifier.fillMaxWidth(0.9f),
@@ -158,8 +158,8 @@ fun ProfileScreen(navController: NavController, userId: String) {
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     userInfo?.let { data ->
-                        Text("Имя:", fontWeight = FontWeight.Bold)
-                        Text(data["FirstName"] ?: "Неизвестно")
+                        Text("Имя:",color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text(data["FirstName"] ?: "Неизвестно", color = Color.Black)
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         Text("Фамилия:", fontWeight = FontWeight.Bold)
                         Text(data["LastName"] ?: "Неизвестно")

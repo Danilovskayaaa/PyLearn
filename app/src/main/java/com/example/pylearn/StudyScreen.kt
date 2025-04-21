@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 
 @Composable
 fun StudyScreen(navController: NavController, userId: String) {
@@ -96,15 +95,7 @@ fun StudyScreen(navController: NavController, userId: String) {
                             .padding(bottom = 8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837)),
                         shape = RoundedCornerShape(50)
-                    )
-
-                    {
-                        Icon(
-                            painter = painterResource(id = R.drawable.theory),
-                            contentDescription = "Теория",
-                            modifier = Modifier.size(20.dp),
-                            tint = Color.White
-                        )
+                    ) {
                         Text("Теория", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                     Button(
@@ -116,13 +107,6 @@ fun StudyScreen(navController: NavController, userId: String) {
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837)),
                         shape = RoundedCornerShape(50)
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.takswor
-                            ),
-                            contentDescription = "Задания",
-                            modifier = Modifier.size(20.dp),
-                            tint = Color.White
-                        )
                         Text("Интерактивные задания", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                     Button(
@@ -134,16 +118,21 @@ fun StudyScreen(navController: NavController, userId: String) {
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837)),
                         shape = RoundedCornerShape(50)
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.testpicte),
-                            contentDescription = "Тесты",
-                            modifier = Modifier.size(20.dp),
-                            tint = Color.White
-                        )
                         Text("Тестирование", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
+                Text(
+                    text = "Статистика",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier
+
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
             }
+
             item {
                 if (statistics.isEmpty()) {
                     Text(
@@ -168,13 +157,13 @@ fun StudyScreen(navController: NavController, userId: String) {
                                         Text(
                                             "Завершённые задания",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 14.sp
                                         )
                                         Text(
                                             "${stat["CompletedTasks"]}",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 12.sp
                                         )
                                     }
@@ -183,13 +172,13 @@ fun StudyScreen(navController: NavController, userId: String) {
                                         Text(
                                             "Завершённые тесты",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 14.sp
                                         )
                                         Text(
                                             "${stat["CompletedTests"]}",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 12.sp
                                         )
                                     }
@@ -198,13 +187,13 @@ fun StudyScreen(navController: NavController, userId: String) {
                                         Text(
                                             "Завершённая теория",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 14.sp
                                         )
                                         Text(
                                             "${stat["CompletedTheory"]}",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 12.sp
                                         )
                                     }
@@ -213,13 +202,13 @@ fun StudyScreen(navController: NavController, userId: String) {
                                         Text(
                                             "Правильные ответы",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 14.sp
                                         )
                                         Text(
                                             "${stat["CorrectAnswers"]}",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 12.sp
                                         )
                                     }
@@ -228,13 +217,13 @@ fun StudyScreen(navController: NavController, userId: String) {
                                         Text(
                                             "Общее количество попыток",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 14.sp
                                         )
                                         Text(
                                             "${stat["TotalAttempts"]}",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 12.sp
                                         )
                                     }
@@ -243,13 +232,13 @@ fun StudyScreen(navController: NavController, userId: String) {
                                         Text(
                                             "Неверные ответы",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 14.sp
                                         )
                                         Text(
                                             "${stat["WrongAnswers"]}",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 12.sp
                                         )
                                     }
@@ -258,13 +247,13 @@ fun StudyScreen(navController: NavController, userId: String) {
                                         Text(
                                             "Последняя активность",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 14.sp
                                         )
                                         Text(
                                             "${stat["LastActivity"]}",
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = Color.White,
                                             fontSize = 12.sp
                                         )
                                     }
@@ -273,7 +262,7 @@ fun StudyScreen(navController: NavController, userId: String) {
                                         text = "Гистограмма статистики",
                                         fontSize = 18.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color.Black,
+                                        color = Color.White,
                                         modifier = Modifier
 
                                             .fillMaxWidth(),
@@ -344,12 +333,6 @@ fun StudyScreen(navController: NavController, userId: String) {
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837)),
                     shape = RoundedCornerShape(50)
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.undopic),
-                        contentDescription = "Назад",
-                        modifier = Modifier.size(20.dp),
-                        tint = Color.White
-                    )
                     Text("Вернуться в профиль", color = Color.White, fontWeight = FontWeight.Bold)
                 }
             }

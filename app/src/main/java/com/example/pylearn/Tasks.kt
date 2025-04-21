@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -285,9 +286,10 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
-                                    .clickable { viewModel.selectCategory(category) }
-                                    .border(1.dp, Color.Gray)
-                                    .background(Color.White)
+                                    .clickable { viewModel.selectCategory(category) },
+                                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                                elevation = CardDefaults.cardElevation(4.dp),
+                                shape = RoundedCornerShape(12.dp)
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -337,9 +339,10 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
-                                    .clickable { viewModel.selectTask(task) }
-                                    .border(1.dp, Color.Gray)
-                                    .background(Color.White),
+                                    .clickable { viewModel.selectTask(task) },
+                                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                                elevation = CardDefaults.cardElevation(4.dp),
+                                shape = RoundedCornerShape(12.dp)
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -464,13 +467,6 @@ fun TaskScreen(navController: NavController, userId: String, sharedPreferences: 
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837))
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.undopic),
-                    contentDescription = "Назад",
-                    modifier = Modifier.size(20.dp),
-                    tint = Color.White
-                )
-
                 Text(
                     text = when {
                         selectedTask.title.isNotEmpty() -> "Назад"
