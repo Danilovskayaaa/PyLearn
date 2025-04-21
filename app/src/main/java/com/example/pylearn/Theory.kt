@@ -40,7 +40,7 @@ fun isTheoryCompleted(context: Context, userId: String, theoryId: String): Boole
 }
 fun saveTheoryCompletion(context: Context, userId: String, theoryId: String, isCompleted: Boolean) {
     val preferences = context.getSharedPreferences("TheoryPrefs_$userId", Context.MODE_PRIVATE)
-    if (isTheoryCompleted(context, userId, theoryId)) return // Не обновляем, если уже завершено
+    if (isTheoryCompleted(context, userId, theoryId)) return
     val editor = preferences.edit()
     editor.putBoolean("completed_theory_$theoryId", isCompleted)
     editor.apply()
