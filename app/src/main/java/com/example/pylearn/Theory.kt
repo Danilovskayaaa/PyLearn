@@ -144,9 +144,9 @@ fun TheoryScreen(
     viewModel: TheoryViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     val categories = viewModel.categories
-    val selectedCategory = viewModel.selectedCategory
+    var selectedCategory = viewModel.selectedCategory
     val titles = viewModel.titles
-    val selectedTheory = viewModel.selectedTheory
+    var selectedTheory = viewModel.selectedTheory
     val context = LocalContext.current
     var isTheoryRead by remember { mutableStateOf(false) }
     LaunchedEffect(isTheoryRead) {
@@ -165,6 +165,7 @@ fun TheoryScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(bottom = 100.dp)
                 .padding(top = 100.dp, start = 16.dp, end = 16.dp)
         ) {
             when {
@@ -172,6 +173,7 @@ fun TheoryScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
+
                             .verticalScroll(rememberScrollState())
                     ) {
                         Text(
@@ -281,6 +283,7 @@ fun TheoryScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
+
                                     .clickable { viewModel.selectCategory(category) },
                                 colors = CardDefaults.cardColors(containerColor = Color.White),
                                 elevation = CardDefaults.cardElevation(4.dp),
@@ -324,6 +327,32 @@ fun TheoryScreen(
                     }
                 }
             }
+
         }
+        if (selectedCategory == null && selectedTheory == null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp)
+            ) {
+                Button(
+                    onClick = {
+                        navController.navigate("StudyScreen/$userId")
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837))
+                ) {
+                    Text(
+                        text = "Назад в обучение",
+                        color = Color.White
+                    )
+                }
+            }
+        }
+
+
+
     }
 }
