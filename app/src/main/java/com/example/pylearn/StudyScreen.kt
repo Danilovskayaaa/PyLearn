@@ -317,19 +317,18 @@ fun StudyScreen(navController: NavController, userId: String) {
                                         }
                                     }
                                 }
-                                }
-                                }
                             }
                         }
+                    }
+                }
             }
             item {
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(5.dp))
                 Button(
                     onClick = { navController.navigate("ProfileScreen/$userId") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp)
-                        .padding(bottom = 16.dp),
+                        .padding(bottom = 4.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF346837)),
                     shape = RoundedCornerShape(50)
                 ) {

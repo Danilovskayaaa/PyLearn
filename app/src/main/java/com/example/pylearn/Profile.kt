@@ -112,7 +112,7 @@ fun ProfileScreen(navController: NavController, userId: String) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 70.dp)
+                .padding(top = 60.dp)
                 .verticalScroll(rememberScrollState()),
 
             horizontalAlignment = Alignment.CenterHorizontally
