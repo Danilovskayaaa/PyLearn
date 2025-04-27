@@ -49,7 +49,7 @@ fun SettingsScreen(navController: NavController, userId: String) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 100.dp, start = 16.dp, end = 16.dp),
+                .padding(top = 60.dp, start = 16.dp, end = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -92,7 +92,7 @@ fun SettingsScreen(navController: NavController, userId: String) {
                 maxLines = 40,
                 minLines = 20
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
                     val message = inputText.text
@@ -110,14 +110,7 @@ fun SettingsScreen(navController: NavController, userId: String) {
             ) {
                 Text(text = "Отправить сообщение", color = Color.White, fontSize = 18.sp)
             }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
-        ) {
+
             Button(
                 onClick = {
                     navController.navigate("ProfileScreen/$userId")
@@ -131,6 +124,7 @@ fun SettingsScreen(navController: NavController, userId: String) {
                 )
             }
         }
+
     }
 }
 fun loadNotificationSetting(sharedPreferences: SharedPreferences, userId: String): Boolean {
